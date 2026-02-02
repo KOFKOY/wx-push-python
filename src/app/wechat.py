@@ -53,6 +53,7 @@ class WeChatClient:
         # 使用 Session 复用链接
         with requests.Session() as session:
             if proxies:
+                logger.info(f"使用代理: {proxy}")
                 session.proxies.update(proxies)
 
             try:
@@ -61,15 +62,15 @@ class WeChatClient:
                 data = resp.json()
 
                 if data.get("errcode") == 0:
-                    logger.info("Message sent successfully")
+                    logger.info("消息发送成功")
                     return {"code": 0, "message": "success", "data": data}
                 else:
-                    logger.warning(f"WeChat API error: {data}")
+                    logger.warning(f"微信API错误: {data}")
                     # 返回 None 表示失败，继续重试
                     return {"code": 500,  "data": data}
 
             except Exception as e:
-                logger.error(f"Network error sending message: {e}")
+                logger.error(f"网络错误发送消息: {e}")
                 return {"code": 500, "data": str(e)}
 
     async def send_message(self, request: PushRequest):

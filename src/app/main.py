@@ -4,9 +4,15 @@ from src.app.db import db
 from src.app.schemas import PushRequest, PushResponse
 from src.app.wechat import wechat_client
 import logging
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+import time
 
 # 配置日志
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 @asynccontextmanager
@@ -21,18 +27,55 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="WeChat Push Service", lifespan=lifespan)
 
+# 要忽略日志的路径
+IGNORE_PATHS = {"/api/heartbeat", "/api/sysinfo"}
+access_logger = logging.getLogger(__name__)
+class FilterAccessLogMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        start_time = time.time()
+        response = await call_next(request)
+
+        path = request.url.path
+        if path not in IGNORE_PATHS:
+            process_time = (time.time() - start_time) * 1000
+            client_host = request.client.host
+            client_port = request.client.port
+            method = request.method
+            status_code = response.status_code
+
+            access_logger.info(
+                '%s:%s - "%s %s HTTP/1.1" %d %.2fms',
+                client_host,
+                client_port,
+                method,
+                path,
+                status_code,
+                process_time,
+            )
+
+        return response
+
+# 注意：要在其他中间件之前添加
+app.add_middleware(FilterAccessLogMiddleware)
+
+
 @app.post("/push", response_model=PushResponse)
 async def push_message(request: PushRequest):
     logger.info(f"Received push request: {request.title}")
     result = await wechat_client.send_message(request)
     if result["code"] != 0:
         # 即使发送失败，也可以返回 500
-        raise HTTPException(status_code=500, detail=result["message"])
+        # raise HTTPException(status_code=500, detail=result["message"])
+        return {"code": 0, "message": result["message"]}
     return result
 
-@app.get("/health")
-async def health_check():
-    return {"status": "ok"}
+@app.post("/api/heartbeat")
+async def heartbeat():
+    return {"status": "fuck"}
+
+@app.post("/api/sysinfo")
+async def sysinfo():
+    return {"status": "fuck"}
 
 
 
