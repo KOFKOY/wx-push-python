@@ -4,9 +4,7 @@ from src.app.db import db
 from src.app.schemas import PushRequest, PushResponse
 from src.app.wechat import wechat_client
 import logging
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-import time
+
 
 # 配置日志
 logging.basicConfig(
@@ -25,38 +23,10 @@ async def lifespan(app: FastAPI):
     logger.info("Disconnecting from database...")
     await db.disconnect()
 
+from src.app.logging_utils import LoggingContextRoute
+
 app = FastAPI(title="WeChat Push Service", lifespan=lifespan)
-
-# 要忽略日志的路径
-IGNORE_PATHS = {"/api/heartbeat", "/api/sysinfo"}
-access_logger = logging.getLogger(__name__)
-class FilterAccessLogMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        start_time = time.time()
-        response = await call_next(request)
-
-        path = request.url.path
-        if path not in IGNORE_PATHS:
-            process_time = (time.time() - start_time) * 1000
-            client_host = request.client.host
-            client_port = request.client.port
-            method = request.method
-            status_code = response.status_code
-
-            access_logger.info(
-                '%s:%s - "%s %s HTTP/1.1" %d %.2fms',
-                client_host,
-                client_port,
-                method,
-                path,
-                status_code,
-                process_time,
-            )
-
-        return response
-
-# 注意：要在其他中间件之前添加
-app.add_middleware(FilterAccessLogMiddleware)
+app.router.route_class = LoggingContextRoute
 
 
 @app.post("/push", response_model=PushResponse)
