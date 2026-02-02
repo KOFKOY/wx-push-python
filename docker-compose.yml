@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  wx-push:
+    image: wx-push
+    build: .
+    restart: always
+    ports:
+      - "19007:8000"
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - CORP_ID=${CORP_ID}
+      - CORP_SECRET=${CORP_SECRET}
+      - AGENT_ID=${AGENT_ID}

@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: main.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py", // 这里指定要运行的文件
+            "console": "integratedTerminal",
+            "jinja": true
+        }
+    ]
+}
