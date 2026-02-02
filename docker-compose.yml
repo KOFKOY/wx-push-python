@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   wx-push:
     image: wx-push
     build: .
     restart: always
     ports:
-      - "19007:8000"
+      - "19014:8000"
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT:-5432}
