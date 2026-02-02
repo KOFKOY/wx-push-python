@@ -1,7 +1,9 @@
 import asyncpg
 from contextlib import asynccontextmanager
 from src.app.config import get_settings
+import logging
 
+logger = logging.getLogger(__name__)
 settings = get_settings()
 
 class Database:
@@ -19,7 +21,7 @@ class Database:
                     port=settings.DB_PORT,
                 )
             except Exception as e:
-                print(f"Error connecting to database: {e}")
+                logger.error(f"Error connecting to database: {e}")
                 # 即使数据库连接失败，应用也应该启动，因为可以使用本地IP发送
                 self.pool = None
 

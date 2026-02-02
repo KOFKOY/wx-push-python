@@ -33,7 +33,7 @@ async def get_all_proxies_from_db():
                 else:
                     proxies.append(f"{protocol}://{ip}:{port}")
         # print(";".join(ips))
-        print(f'获取到数据库代理数量：{len(proxies)}')
+        logger.info(f'获取到数据库代理数量：{len(proxies)}')
         return proxies
     except Exception as e:
         logger.error(f"Failed to fetch proxies from DB: {e}")
