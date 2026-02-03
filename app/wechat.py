@@ -3,9 +3,9 @@ import time
 import requests
 import asyncio
 import threading
-from src.app.config import get_settings
-from src.app.schemas import PushRequest, MessageType
-from src.app.proxy import get_valid_proxies_list
+from app.config import get_settings
+from app.schemas import PushRequest, MessageType
+from app.proxy import get_valid_proxies_list
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -131,7 +131,7 @@ class WeChatClient:
 
         # 3. 缓存失效，获取全量代理
         # 注意：不再使用 get_valid_proxies_list 进行检测
-        from src.app.proxy import get_all_proxies_from_db
+        from app.proxy import get_all_proxies_from_db
         all_proxies = await get_all_proxies_from_db()
 
         # 过滤掉已经试过的 cached_proxy (其实不过滤也就重试一次，无所谓，但过滤了更干净)

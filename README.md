@@ -44,7 +44,7 @@ AGENT_ID=your_agent_id
 
 启动服务:
 ```bash
-uvicorn src.app.main:app --reload
+uvicorn app.main:app --reload
 ```
 
 ### 3. Docker 部署

@@ -1,6 +1,6 @@
 import asyncpg
 from contextlib import asynccontextmanager
-from src.app.config import get_settings
+from app.config import get_settings
 import logging
 
 logger = logging.getLogger(__name__)
