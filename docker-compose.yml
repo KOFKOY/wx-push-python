@@ -4,7 +4,7 @@ services:
     build: .
     restart: always
     ports:
-      - "19014:19014"
+      - "11180:11180"
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT:-5432}
