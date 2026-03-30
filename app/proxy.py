@@ -10,6 +10,9 @@ async def get_all_proxies_from_db():
     """
     从数据库获取所有代理
     """
+    if not settings.USE_DATABASE:
+        logger.info("USE_DATABASE=False，跳过数据库代理获取")
+        return []
     try:
         rows = await db.fetch_all("SELECT * FROM proxies WHERE status = 1")
         proxies = []
@@ -83,6 +86,9 @@ async def check_add_proxy(content: str) -> int:
     格式: protocol://ip:port ...
     例如: socks5://176.181.163.79:8889
     """
+    if not settings.USE_DATABASE:
+        logger.warning("USE_DATABASE=False，代理入库功能不可用")
+        return 0
     logger.info("开始解析并检测代理...")
     added_count = 0
 
@@ -154,6 +160,9 @@ async def get_raw_proxies_from_db():
     """
     获取数据库中所有代理原始记录 (包含 ID 和 Status)
     """
+    if not settings.USE_DATABASE:
+        logger.info("USE_DATABASE=False，跳过代理原始数据查询")
+        return []
     try:
         return await db.fetch_all("SELECT * FROM proxies")
     except Exception as e:
@@ -165,6 +174,9 @@ async def check_and_update_all_proxies() -> dict:
     查询全表数据，检测代理可用性。
     如果检测状态与数据库状态不一致，则更新数据库状态和创建时间。
     """
+    if not settings.USE_DATABASE:
+        logger.info("USE_DATABASE=False，跳过代理全量检测")
+        return {"total": 0, "updated": 0}
     logger.info("开始全量检测代理并更新状态...")
     rows = await get_raw_proxies_from_db()
     if not rows:

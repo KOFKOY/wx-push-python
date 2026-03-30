@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
 
+    # 功能开关
+    # 硬编码控制是否使用数据库及代理池。
+    # False 时，应用启动不会连接数据库，发送消息始终直连不走代理。
+    USE_DATABASE: bool = False
+
     # 代理检测 URL
     PROXY_CHECK_URL: str = "https://httpbin.org/ip"
 

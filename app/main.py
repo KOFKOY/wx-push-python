@@ -3,8 +3,10 @@ from contextlib import asynccontextmanager
 from app.db import db
 from app.schemas import PushRequest, PushResponse
 from app.wechat import wechat_client
+from app.config import get_settings
 import logging
 
+settings = get_settings()
 
 # 配置日志
 logging.basicConfig(
@@ -16,12 +18,18 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 启动时连接数据库
-    logger.info("Connecting to database...")
-    await db.connect()
+    if settings.USE_DATABASE:
+        logger.info("Connecting to database...")
+        await db.connect()
+    else:
+        logger.info("USE_DATABASE=False，跳过数据库连接")
     yield
     # 关闭时断开连接
-    logger.info("Disconnecting from database...")
-    await db.disconnect()
+    if settings.USE_DATABASE:
+        logger.info("Disconnecting from database...")
+        await db.disconnect()
+    else:
+        logger.info("USE_DATABASE=False，跳过数据库断开")
 
 from app.logging_utils import LoggingContextRoute
 

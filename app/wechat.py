@@ -92,6 +92,14 @@ class WeChatClient:
         # 转换消息体
         message_body = self._build_message_body(request)
 
+        # 当不使用数据库时，强制直连，不走代理
+        if not settings.USE_DATABASE:
+            self.cached_proxy = None
+            result = await loop.run_in_executor(None, self._send_msg_sync, None, token, message_body)
+            if result["code"] == 0:
+                return result
+            return {"code": 500, "message": f"发送失败（直连模式）: {result.get('data')}"}
+
         # 0. 准备测试队列
         candidates = []
 

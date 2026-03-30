@@ -11,6 +11,9 @@ class Database:
         self.pool = None
 
     async def connect(self):
+        if not settings.USE_DATABASE:
+            logger.info("USE_DATABASE=False，跳过数据库连接")
+            return
         if not self.pool:
             try:
                 self.pool = await asyncpg.create_pool(
@@ -26,10 +29,15 @@ class Database:
                 self.pool = None
 
     async def disconnect(self):
+        if not settings.USE_DATABASE:
+            logger.info("USE_DATABASE=False，跳过数据库断开")
+            return
         if self.pool:
             await self.pool.close()
 
     async def fetch_all(self, query: str, *args):
+        if not settings.USE_DATABASE:
+            return []
         if not self.pool:
             return []
         async with self.pool.acquire() as conn:
@@ -37,6 +45,8 @@ class Database:
 
     # 批量插入
     async def execute_many(self, query: str, args_list: list[tuple]):
+        if not settings.USE_DATABASE:
+            return
         if not self.pool:
             return
         async with self.pool.acquire() as conn:
