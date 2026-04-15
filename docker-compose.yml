@@ -1,6 +1,7 @@
 services:
   wx-push:
     image: wx-push
+    container_name: wx-push
     build: .
     restart: always
     ports:

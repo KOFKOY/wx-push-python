@@ -1,6 +1,9 @@
 # Dockerfile
 FROM python:3.10-slim-bookworm
 
+# 先把 http 源改成 https
+RUN find /etc/apt -name '*.list' -o -name '*.sources' \
+    | xargs sed -i 's|http://|https://|g'
 # Install uv provided tools
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
