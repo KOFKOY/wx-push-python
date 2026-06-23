@@ -10,3 +10,8 @@ services:
       - CORP_ID=${CORP_ID}
       - CORP_SECRET=${CORP_SECRET}
       - AGENT_ID=${AGENT_ID}
+    networks:
+      - nginx_net
+networks:
+  nginx_net:
+    external: true
