@@ -31,7 +31,7 @@ COPY app ./app
 RUN uv sync --frozen --no-dev
 
 # 暴露端口
-EXPOSE 8000
+EXPOSE 11180
 
 # 启动命令
 CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "11180","--no-access-log"]

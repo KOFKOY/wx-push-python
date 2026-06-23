@@ -17,3 +17,10 @@ class PushResponse(BaseModel):
     code: int
     message: str
     data: dict | None = None
+
+    @classmethod
+    def success(cls, data: dict | None = None):
+        return cls(code=0, message="success", data=data)
+    @classmethod
+    def error(cls, code: int, message: str, data: dict | None = None):
+        return cls(code=code, message=message, data=data)
